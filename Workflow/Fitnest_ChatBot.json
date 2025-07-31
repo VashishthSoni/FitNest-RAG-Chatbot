@@ -1,0 +1,363 @@
+{
+  "name": "Fitnest ChatBot",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "mode": "webhook",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -400,
+        -160
+      ],
+      "id": "433a0e48-e053-4545-8ede-63d6242f0daa",
+      "name": "When chat message received",
+      "webhookId": "67e5934e-e08e-4d29-931b-2374ceb55cd1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=## Role:\nYou are a friendly and helpful assistant for a fitness company named **FitNest**.\n\n## Task:\nYou ONLY assist users with company-related and fitness information **by using tools**, and do not answer using your own knowledge.\n\n## Rules:\n- You MUST use the tool **fitnest_q** to answer any question about FitNest (e.g., hours, services, pricing, location, trainers, etc.).\n- Do NOT generate answers on your own. Only respond with content fetched via the `fitnest_q` tool.\n- If the tool gives no result, apologize and let the user know you couldn’t find the information.\n\n## Tools:\n- **fitnest_q**  \n  Use this to fetch company knowledge. You MUST use this to answer ANY business-related question.\n\n- **Store_lead**  \n  Use this to save customer contact info (name, email, interest). Use it only after the customer agrees to receive a catalog or album.\n\n## Lead Collection Strategy:\n- If a user asks about services, trainers, timings, etc., you may casually ask:\n  > \"Would you like me to send you a quick catalog or image album about this?\"\n- If they say yes, then kindly ask for their name and email. Don’t sound salesy or pushy—act like you’re being helpful.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -180,
+        -160
+      ],
+      "id": "47ae12c7-f190-47e3-b0a2-6034f648561a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        40
+      ],
+      "id": "78b52a0b-f14a-4d95-8a48-847a5c3b1d76",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "D727HrKm6CVwsaAx",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        40
+      ],
+      "id": "5a7a4479-5134-40c1-b4bb-c74f9ac7d86e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Gives answers related to FitNest or FitNest Company "
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        60
+      ],
+      "id": "6acd27af-06da-4d1b-b87e-202538356eb2",
+      "name": "fitnest_q"
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "fitnestqna",
+          "mode": "list",
+          "cachedResultName": "fitnestqna"
+        },
+        "options": {
+          "pineconeNamespace": "fitnestQ&A"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        -100,
+        220
+      ],
+      "id": "4d4eafab-3d53-41fc-877b-61c7e99bd2f8",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "wIsgaQDGEtyJ4WGm",
+          "name": "fitnestqna"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        280,
+        220
+      ],
+      "id": "4485a8d7-f4b4-47c0-8935-5968b71fde97",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "D727HrKm6CVwsaAx",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -180,
+        380
+      ],
+      "id": "b3bec529-de07-45c6-84dc-61747cdb8b9b",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "D727HrKm6CVwsaAx",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appW8PlrEo47Q913i",
+          "mode": "list",
+          "cachedResultName": "FitNest",
+          "cachedResultUrl": "https://airtable.com/appW8PlrEo47Q913i"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblYBqSSqV8DjHyMX",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appW8PlrEo47Q913i/tblYBqSSqV8DjHyMX"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+            "Email": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Email', ``, 'string') }}",
+            "Interest": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Interest', ``, 'string') }}",
+            "Status": "New lead"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Interest",
+              "displayName": "Interest",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New lead",
+                  "value": "New lead"
+                },
+                {
+                  "name": "Detail Sent",
+                  "value": "Detail Sent"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "typecast": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Typecast', ``, 'boolean') }}"
+        }
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        420,
+        60
+      ],
+      "id": "b6f6e185-c2b2-4d3b-b148-a5647a3a8a2c",
+      "name": "Store_lead",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "aZ4Msj4bGaWzBxTv",
+          "name": "FitNest"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fitnest_q": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "fitnest_q",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "fitnest_q",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store_lead": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b2f7eb94-f2b2-4efb-a8eb-34ab265fe97e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0a0246c3dfbed0e332d8a38761d52c9e5033872fb11ec58b45b8f7121d6b7b89"
+  },
+  "id": "jTapU9aLd6feN5aB",
+  "tags": []
+}
